@@ -9,9 +9,9 @@ clear all;close all;clc;
 fprintf('PENGERJAAN NOMOR 1\n');
 
 % Memasukkan datasets ke matrix w
-[ w0, labels0 ] = loadSubset(0); 
-[ w1, labels1 ] = loadSubset(1);
-[ w2, labels2 ] = loadSubset(2);
+[w0, labels0] = loadSubset(0); 
+[w1, labels1] = loadSubset(1);
+[w2, labels2] = loadSubset(2);
 
 Acc0=[]; Acc1=[]; Acc2=[];
 
@@ -148,15 +148,15 @@ legend('Original', 'CLAHE', sprintf('Gamma (\\gamma=%.1f)', gamma_val2), 'Locati
 figure('Name', 'Nomor 2 - Hasil Visual Pre-processing', 'NumberTitle', 'off');
 sample_idx = 1; 
 
-subplot(3,3,2); imshow(reshape(w0(:, sample_idx), [50, 50]), []); title('Sub 0: Asli');
+subplot(3,3,2); imshow(reshape(w0(:, sample_idx), [50, 50]), []); title('Subset 0: Asli');
 
-subplot(3,3,4); imshow(reshape(w1(:, sample_idx), [50, 50]), []); title('Sub 1: Asli');
-subplot(3,3,5); imshow(reshape(w1_clahe(:, sample_idx), [50, 50]), []); title('Sub 1: CLAHE');
-subplot(3,3,6); imshow(reshape(w1_gamma(:, sample_idx), [50, 50]), []); title(sprintf('Sub 1: Gamma %.1f', gamma_val1));
+subplot(3,3,4); imshow(reshape(w1(:, sample_idx), [50, 50]), []); title('Subset 1: Asli');
+subplot(3,3,5); imshow(reshape(w1_clahe(:, sample_idx), [50, 50]), []); title('Subset 1: CLAHE');
+subplot(3,3,6); imshow(reshape(w1_gamma(:, sample_idx), [50, 50]), []); title(sprintf('Subset 1: Gamma %.1f', gamma_val1));
 
-subplot(3,3,7); imshow(reshape(w2(:, sample_idx), [50, 50]), []); title('Sub 2: Asli');
-subplot(3,3,8); imshow(reshape(w2_clahe(:, sample_idx), [50, 50]), []); title('Sub 2: CLAHE');
-subplot(3,3,9); imshow(reshape(w2_gamma(:, sample_idx), [50, 50]), []); title(sprintf('Sub 2: Gamma %.1f', gamma_val2));
+subplot(3,3,7); imshow(reshape(w2(:, sample_idx), [50, 50]), []); title('Subset 2: Asli');
+subplot(3,3,8); imshow(reshape(w2_clahe(:, sample_idx), [50, 50]), []); title('Subset 2: CLAHE');
+subplot(3,3,9); imshow(reshape(w2_gamma(:, sample_idx), [50, 50]), []); title(sprintf('Subset 2: Gamma %.1f', gamma_val2));
 
 %% PENGERJAAN NOMOR 3
 fprintf('\nPENGERJAAN NOMOR 3\n');
@@ -168,8 +168,8 @@ subsets = {w1, w2};
 subset_names = {'Subset 1', 'Subset 2'};
 methods = {'CLAHE', 'Gamma'};
 
-% Perbandingan hasil visual penurunan ukuran gambar
-figure('Name', 'Nomor 3 - Penurunan Ukuran Gambar', 'NumberTitle', 'off');
+% Perbandingan hasil visual pengecilan ukuran gambar
+figure('Name', 'Nomor 3 - Pengecilan Ukuran Gambar', 'NumberTitle', 'off');
 for i = 1:length(image_sizes)
     sz = image_sizes(i);
     subplot(1, length(image_sizes), i);
@@ -177,7 +177,7 @@ for i = 1:length(image_sizes)
     imshow(imresize(img_sample, [sz, sz]), []);
     title(sprintf('%d x %d px', sz, sz));
 end
-sgtitle('Visualisasi Penurunan Ukuran Gambar');
+sgtitle('Visualisasi Pengecilan Ukuran Gambar');
 
 % Grafik analisis parameter target -2% dan -5%
 figure('Name', 'Nomor 3 - Grafik Analisis Parameter Target -2% dan -5%', 'NumberTitle', 'off');
