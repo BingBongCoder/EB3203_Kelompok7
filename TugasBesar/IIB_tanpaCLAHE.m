@@ -10,6 +10,8 @@
 % 1. Post-Processing
 % a. masking pada area non-retina agar tidak ada garis tepi putih di
 %    tepi-tepi retina citra hasil akhir
+% 2. Matched Filter
+% a. multiresolusi berdasarkan diameter rata-rata pembuluh darah dari Pengerjaan I. EKSPLORASI
 
 clear;
 clc; 
