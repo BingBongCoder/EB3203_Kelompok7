@@ -10,7 +10,9 @@
 % a. implementasi CLAHE (Contrast Limited Adaptive Histogram Equalization)
 % b. implementasi Top-Hat Transform
 % c. pengurangan noise : median filter pada citra kanal hijau
-% 2. Post-Processing
+% 2. Matched Filter
+% a. multiresolusi berdasarkan diameter rata-rata pembuluh darah dari Pengerjaan I. EKSPLORASI
+% 3. Post-Processing
 % a. morfologi adaptif (dilasi diubah ke thinning dan thickening)
 % b. masking pada area non-retina agar tidak ada garis tepi putih di
 %    tepi-tepi retina citra hasil akhir
