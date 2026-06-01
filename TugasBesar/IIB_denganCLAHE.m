@@ -56,6 +56,11 @@ all_names = cell(length(files), 1);
 all_acc   = zeros(length(files), 1);
 all_sens  = zeros(length(files), 1);
 all_spec  = zeros(length(files), 1);
+
+% Variabel-Variabel Penyimpanan untuk Analisis Kinerja Metode Segmentasi
+target_overlay_names = {'22_training', '30_training', '23_training', '35_training', '31_training'};
+stored_overlays = cell(1, length(target_overlay_names));
+
 for f = 1:length(files)
     img_name = files(f).name;
     [~, base_name, ~] = fileparts(img_name);
@@ -116,6 +121,26 @@ for f = 1:length(files)
     all_sens(f)  = sens;
     all_spec(f)  = spec;
     
+    % Penyimpanan Citra Overlay untuk Analisis Kinerja Metode Segmentasi
+    [is_target, target_idx] = ismember(base_name, target_overlay_names);
+    if is_target
+
+        if size(I_raw, 3) == 1
+            I_rgb = cat(3, I_raw, I_raw, I_raw);
+        else
+            I_rgb = I_raw;
+        end
+        
+        R_channel = I_rgb(:,:,1);
+        G_channel = I_rgb(:,:,2);
+        B_channel = I_rgb(:,:,3);
+        R_channel(I_bv) = 0;
+        G_channel(I_bv) = 0;
+        B_channel(I_bv) = 255;
+        I_overlay = cat(3, R_channel, G_channel, B_channel);
+        stored_overlays{target_idx} = I_overlay;
+    end
+    
     % Visualisasi Hasil
     tab = uitab('Parent', tgroup, 'Title', base_name);
     
@@ -171,6 +196,8 @@ for f = 1:length(files)
         
     drawnow;
 end
+
+% Tab Rangkuman Data Performa
 tab_summary = uitab('Parent', tgroup, 'Title', 'Data Akurasi, Sensitivitas, dan Spesifisitas');
 
 % Menghitung Rata-Rata dan Standar Deviasi Data Akurasi, Sensitivitas, dan Spesifisitas
@@ -195,11 +222,13 @@ Data_Tabel{mean_idx, 1} = Nama_Citra{mean_idx};
 Data_Tabel{mean_idx, 2} = sprintf('%.2f %%', avg_acc * 100);
 Data_Tabel{mean_idx, 3} = sprintf('%.2f %%', avg_sens * 100);
 Data_Tabel{mean_idx, 4} = sprintf('%.2f %%', avg_spec * 100);
+
 std_idx = length(Nama_Citra);
 Data_Tabel{std_idx, 1} = Nama_Citra{std_idx};
 Data_Tabel{std_idx, 2} = sprintf('%.2f %%', std_acc * 100);
 Data_Tabel{std_idx, 3} = sprintf('%.2f %%', std_sens * 100);
 Data_Tabel{std_idx, 4} = sprintf('%.2f %%', std_spec * 100);
+
 uitable('Parent', tab_summary, ...
         'Data', Data_Tabel, ...
         'ColumnName', {'Nama Citra', 'Akurasi', 'Sensitivitas', 'Spesifisitas'}, ...
@@ -210,14 +239,24 @@ uitable('Parent', tab_summary, ...
         'FontSize', 12, ...
         'FontName', 'Times New Roman');
 
-%% FUNGSI-FUNGSI MATCHED FILTER
-% Fungsi Mempersiapkan Kumpulan Kernel
+% Analisis Kinerja Metode Segmentasi
+tab_overlay = uitab('Parent', tgroup, 'Title', 'Analisis Visual Overlay');
+for i = 1:length(target_overlay_names)
+    if ~isempty(stored_overlays{i})
+        ax_overlay = subplot(2, 3, i, 'Parent', tab_overlay);
+        imshow(stored_overlays{i}, 'Parent', ax_overlay);
+        title(ax_overlay, ['Citra ', strrep(target_overlay_names{i}, '_', '\_')], ...
+            'FontName', 'Times New Roman', 'FontSize', 12, 'FontWeight', 'bold');
+    end
+end
 
+%% FUNGSI-FUNGSI MATCHED FILTER
+
+% Fungsi Mempersiapkan Kumpulan Kernel
 function cellArr = generateRotKernels(kernel, resolution)
     num = round(180/resolution); cellArr = cell(1, num);
     for i=0:(num-1), cellArr{1, i+1} = imrotate(kernel, i*resolution, 'bilinear', 'crop'); end
 end
-
 % Fungsi Membandingkan Setiap Piksel Citra dengan Kernel yang Dibuat
 function I_corr = getCorrForAllPixels(kernel, I, resolution, threshold, ~)
     cellArr = generateRotKernels(kernel, resolution);
