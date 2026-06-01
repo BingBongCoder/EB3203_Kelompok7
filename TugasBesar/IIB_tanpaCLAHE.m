@@ -18,7 +18,6 @@
 clear;
 clc; 
 close all;
-
 set(groot, 'defaultAxesFontName', 'Times New Roman');
 set(groot, 'defaultTextFontName', 'Times New Roman');
 set(groot, 'defaultUicontrolFontName', 'Times New Roman');
@@ -28,7 +27,7 @@ set(groot, 'defaultUitableFontName', 'Times New Roman');
 sigma_vals = [1.2425, 1.73125, 3.06375];    
 L_vals = [4.97, 6.925, 12.255];
 res_angle = 15;
-threshold_val = 150; 
+threshold_val = 150;
 
 % Parameter Post-Processing
 bwarea_val = 10;
@@ -38,7 +37,6 @@ fov_erode_radius = 15;
 dir_img = fullfile('training images', 'images');
 dir_gt  = fullfile('training images', 'vessel');
 files = dir(fullfile(dir_img, '*.tif'));
-
 hFig = figure('Name', 'Hasil Segmentasi Non-CLAHE (Comparison)', 'Position', [100, 100, 1000, 700]);
 movegui(hFig, 'center'); 
 tgroup = uitabgroup('Parent', hFig);
@@ -48,7 +46,6 @@ all_names = cell(length(files), 1);
 all_acc   = zeros(length(files), 1);
 all_sens  = zeros(length(files), 1);
 all_spec  = zeros(length(files), 1);
-
 for f = 1:length(files)
     img_name = files(f).name;
     [~, base_name, ~] = fileparts(img_name);
@@ -63,7 +60,6 @@ for f = 1:length(files)
     I = im2double(I_green);
     
     % Menerapkan Matched Filter Multiresolusi
-    % Menyiapkan matriks 3D untuk menampung hasil dari ke-3 kernel
     I_corr_multi = zeros(size(I, 1), size(I, 2), length(sigma_vals));
     
     for k_idx = 1:length(sigma_vals)
@@ -153,17 +149,20 @@ for f = 1:length(files)
     text(ax8, 0, 0.5, sprintf('Akurasi: %.2f%%\nSensitivitas: %.2f%%\nSpesifisitas: %.2f%%', acc*100, sens*100, spec*100), ...
         'FontSize', 12, 'FontWeight', 'bold', 'FontName', 'Times New Roman');
         
-    drawnow; % Memaksa pembaruan UI agar tidak freeze selama komputasi multiresolusi
+    drawnow; 
 end
 tab_summary = uitab('Parent', tgroup, 'Title', 'Data Akurasi, Sensitivitas, dan Spesifisitas');
 
-% Menghitung Rata-Rata Data Akurasi, Sensitivitas, dan Spesifisitas
+% Menghitung Rata-Rata dan Standar Deviasi Data Akurasi, Sensitivitas, dan Spesifisitas
 avg_acc  = mean(all_acc);
 avg_sens = mean(all_sens);
 avg_spec = mean(all_spec);
+std_acc  = std(all_acc);
+std_sens = std(all_sens);
+std_spec = std(all_spec);
 
 % Menampilkan Tabel Data Akurasi, Sensitivitas, dan Spesifisitas
-Nama_Citra = [all_names; {'Rata-Rata'}];
+Nama_Citra = [all_names; {'Rata-Rata'}; {'Standar Deviasi'}];
 Data_Tabel = cell(length(Nama_Citra), 4);
 for i = 1:length(files)
     Data_Tabel{i, 1} = Nama_Citra{i};
@@ -171,12 +170,16 @@ for i = 1:length(files)
     Data_Tabel{i, 3} = sprintf('%.2f %%', all_sens(i) * 100);
     Data_Tabel{i, 4} = sprintf('%.2f %%', all_spec(i) * 100);
 end
-last_idx = length(Nama_Citra);
-Data_Tabel{last_idx, 1} = Nama_Citra{last_idx};
-Data_Tabel{last_idx, 2} = sprintf('%.2f %%', avg_acc * 100);
-Data_Tabel{last_idx, 3} = sprintf('%.2f %%', avg_sens * 100);
-Data_Tabel{last_idx, 4} = sprintf('%.2f %%', avg_spec * 100);
-
+mean_idx = length(Nama_Citra) - 1;
+Data_Tabel{mean_idx, 1} = Nama_Citra{mean_idx};
+Data_Tabel{mean_idx, 2} = sprintf('%.2f %%', avg_acc * 100);
+Data_Tabel{mean_idx, 3} = sprintf('%.2f %%', avg_sens * 100);
+Data_Tabel{mean_idx, 4} = sprintf('%.2f %%', avg_spec * 100);
+std_idx = length(Nama_Citra);
+Data_Tabel{std_idx, 1} = Nama_Citra{std_idx};
+Data_Tabel{std_idx, 2} = sprintf('%.2f %%', std_acc * 100);
+Data_Tabel{std_idx, 3} = sprintf('%.2f %%', std_sens * 100);
+Data_Tabel{std_idx, 4} = sprintf('%.2f %%', std_spec * 100);
 uitable('Parent', tab_summary, ...
         'Data', Data_Tabel, ...
         'ColumnName', {'Nama Citra', 'Akurasi', 'Sensitivitas', 'Spesifisitas'}, ...
@@ -188,6 +191,7 @@ uitable('Parent', tab_summary, ...
         'FontName', 'Times New Roman');
 
 %% FUNGSI-FUNGSI MATCHED FILTER
+
 % Fungsi Mempersiapkan Kumpulan Kernel
 function cellArr = generateRotKernels(kernel, resolution)
     num = round(180/resolution); 
