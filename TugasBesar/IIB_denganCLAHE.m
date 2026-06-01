@@ -56,7 +56,6 @@ all_names = cell(length(files), 1);
 all_acc   = zeros(length(files), 1);
 all_sens  = zeros(length(files), 1);
 all_spec  = zeros(length(files), 1);
-
 for f = 1:length(files)
     img_name = files(f).name;
     [~, base_name, ~] = fileparts(img_name);
@@ -172,16 +171,18 @@ for f = 1:length(files)
         
     drawnow;
 end
-
 tab_summary = uitab('Parent', tgroup, 'Title', 'Data Akurasi, Sensitivitas, dan Spesifisitas');
 
-% Menghitung Rata-Rata Data Akurasi, Sensitivitas, dan Spesifisitas
+% Menghitung Rata-Rata dan Standar Deviasi Data Akurasi, Sensitivitas, dan Spesifisitas
 avg_acc  = mean(all_acc);
 avg_sens = mean(all_sens);
 avg_spec = mean(all_spec);
+std_acc  = std(all_acc);
+std_sens = std(all_sens);
+std_spec = std(all_spec);
 
 % Menampilkan Tabel Data Akurasi, Sensitivitas, dan Spesifisitas
-Nama_Citra = [all_names; {'Rata-Rata'}];
+Nama_Citra = [all_names; {'Rata-Rata'}; {'Standar Deviasi'}];
 Data_Tabel = cell(length(Nama_Citra), 4);
 for i = 1:length(files)
     Data_Tabel{i, 1} = Nama_Citra{i};
@@ -189,11 +190,16 @@ for i = 1:length(files)
     Data_Tabel{i, 3} = sprintf('%.2f %%', all_sens(i) * 100);
     Data_Tabel{i, 4} = sprintf('%.2f %%', all_spec(i) * 100);
 end
-last_idx = length(Nama_Citra);
-Data_Tabel{last_idx, 1} = Nama_Citra{last_idx};
-Data_Tabel{last_idx, 2} = sprintf('%.2f %%', avg_acc * 100);
-Data_Tabel{last_idx, 3} = sprintf('%.2f %%', avg_sens * 100);
-Data_Tabel{last_idx, 4} = sprintf('%.2f %%', avg_spec * 100);
+mean_idx = length(Nama_Citra) - 1;
+Data_Tabel{mean_idx, 1} = Nama_Citra{mean_idx};
+Data_Tabel{mean_idx, 2} = sprintf('%.2f %%', avg_acc * 100);
+Data_Tabel{mean_idx, 3} = sprintf('%.2f %%', avg_sens * 100);
+Data_Tabel{mean_idx, 4} = sprintf('%.2f %%', avg_spec * 100);
+std_idx = length(Nama_Citra);
+Data_Tabel{std_idx, 1} = Nama_Citra{std_idx};
+Data_Tabel{std_idx, 2} = sprintf('%.2f %%', std_acc * 100);
+Data_Tabel{std_idx, 3} = sprintf('%.2f %%', std_sens * 100);
+Data_Tabel{std_idx, 4} = sprintf('%.2f %%', std_spec * 100);
 uitable('Parent', tab_summary, ...
         'Data', Data_Tabel, ...
         'ColumnName', {'Nama Citra', 'Akurasi', 'Sensitivitas', 'Spesifisitas'}, ...
@@ -205,8 +211,8 @@ uitable('Parent', tab_summary, ...
         'FontName', 'Times New Roman');
 
 %% FUNGSI-FUNGSI MATCHED FILTER
-
 % Fungsi Mempersiapkan Kumpulan Kernel
+
 function cellArr = generateRotKernels(kernel, resolution)
     num = round(180/resolution); cellArr = cell(1, num);
     for i=0:(num-1), cellArr{1, i+1} = imrotate(kernel, i*resolution, 'bilinear', 'crop'); end
