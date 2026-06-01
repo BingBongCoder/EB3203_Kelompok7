@@ -7,9 +7,11 @@
 % https://github.com/Sanjan611/Blood-Vessel-Detection-Using-Matched-Filters
 % Pengembangan yang diterapkan adalah:
 % 1. Pre-Processing
-% a. implementasi CLAHE (Contrast Limited Adaptive Histogram Equalization)
-% b. implementasi Top-Hat Transform
-% c. pengurangan noise : median filter pada citra kanal hijau
+% a. pengurangan noise : median filter pada citra kanal hijau 
+% b. implementasi CLAHE (Contrast Limited Adaptive Histogram Equalization)
+% c. implementasi inversi
+% d. implementasi Top-Hat Transform
+% e. konversi tipe data citra kanal hijau menjadi tipe data double
 % 2. Matched Filter
 % a. multiresolusi berdasarkan diameter rata-rata pembuluh darah dari Pengerjaan I. EKSPLORASI
 % 3. Post-Processing
