@@ -7,10 +7,12 @@
 % post-processing,
 % https://github.com/Sanjan611/Blood-Vessel-Detection-Using-Matched-Filters
 % Pengembangan yang diterapkan adalah:
-% 1. Post-Processing
+% 1. Pre-Processing
+% a. konversi tipe data citra kanal hijau menjadi tipe data double
+% 2. Post-Processing
 % a. masking pada area non-retina agar tidak ada garis tepi putih di
 %    tepi-tepi retina citra hasil akhir
-% 2. Matched Filter
+% 3. Matched Filter
 % a. multiresolusi berdasarkan diameter rata-rata pembuluh darah dari Pengerjaan I. EKSPLORASI
 
 clear;
